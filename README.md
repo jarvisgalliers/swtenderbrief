@@ -3,18 +3,18 @@
 Plain static site for **South-West Tender Brief** (`v-2026-05-09-tenderradarsw`). No build step, no JS framework, no trackers. Hosted on **GitHub Pages** from the repo `jarvisgalliers/swtenderbrief` (custom domain `swtenderbrief.co.uk`).
 
 ## Files
-- `index.html` — landing page (copy from `../drafts/2026-05-10-landing-page-copy.md`)
-- `terms.html`, `refund.html`, `privacy.html` — legal pages (from `../drafts/2026-05-10-*.md`) — **DRAFT**, see below
-- `404.html`, `style.css`, `.nojekyll`, `CNAME` (`swtenderbrief.co.uk`)
+- `index.html` — landing page (based on `../drafts/2026-05-10-landing-page-copy.md`; AI / Jarvis-Galliers wording removed per Freddie — decision #93)
+- `terms.html`, `refund.html`, `privacy.html` — legal pages (based on `../drafts/2026-05-10-*.md`); finalised — ICO ref ZA734883, controller "Frederick Leatham, trading as Jarvis Galliers, sole trader, Reading, Berkshire", dated 12 May 2026, no AI wording. (Plain-language drafts, not solicitor-reviewed.)
+- `404.html` (keeps `noindex` deliberately), `style.css`, `.nojekyll`, `CNAME` (`swtenderbrief.co.uk`)
 
-## Status — paid tier LIVE (2026-05-12); not fully launch-clean yet
-- **Stripe: LIVE.** `index.html` has the real "Get the weekly brief — £89/year" buttons pointing at the live Payment Link `https://buy.stripe.com/5kQ5kFa0z4uFeQqbUv2B200`. (Verify in the Stripe dashboard that this live link still carries the `main_trade` / `other_trades` / `postcode_areas` custom fields the test link had — `subscribers.py reconcile` needs them.)
-- **Still outstanding before it's fully clean:**
-  1. **Legal pages have placeholders** — `[TOWN/COUNTY]`, `[DATE OF PUBLICATION]`, and the ICO registration reference `ZA######` (fee paid 2026-05-11; Freddie to supply the number). Fill these and remove the "Draft — pre-launch" banners. Stripe's ToS requires live terms/refund/privacy while taking payment.
-  2. **Outbound email sending** for the swtenderbrief domain isn't enabled yet — so a new subscriber pays but the welcome email + first digest won't actually send until `SWTENDERBRIEF_ALLOW_SEND=1` is set and the path is run. Enable this ASAP.
-  3. The free monthly tier isn't live (needs #2). The page's free-tier CTA is an `mailto:` "tell me when it opens".
-  4. `<meta name="robots" content="noindex">` is still on `index.html` — flip it once the legal pages are finalised.
-  5. Freddie should read the legal pages line-by-line (and consider a quick paid legal check).
+## Status — LIVE (2026-05-12)
+- **HTTPS** live (Let's Encrypt cert, http→https enforced). Indexable (no `noindex` on content pages).
+- **Stripe: LIVE.** `index.html` has the real "Get the weekly brief — £89/year" buttons → live Payment Link `https://buy.stripe.com/5kQ5kFa0z4uFeQqbUv2B200`. (Verify in the Stripe dashboard that this live link still carries the `main_trade` / `other_trades` / `postcode_areas` custom fields the test link had — `subscribers.py reconcile` needs them.)
+- **Remaining:**
+  1. **Welcome emails don't send yet** — `secrets/stripe.txt` needs a `live_secret:sk_live_…` (or restricted `rk_live_…`) so the hourly `Jarvis-TenderRadarSW-Subscribers` task's `reconcile` sees real subscribers. `SWTENDERBRIEF_ALLOW_SEND` / `_ALLOW_LIVE` are already set.
+  2. The free monthly tier isn't live (needs outbound sending wired). The page's free-tier CTA is an `mailto:` "tell me when it opens".
+  3. The weekly `send-digest --send` isn't scheduled yet (needs a send day/time + the curation pipeline producing `curator_decision=include` tenders).
+  4. The Resend welcome/digest email templates may still contain AI wording — not yet aligned with the site.
 
 ## Deploying
 The repo `jarvisgalliers/swtenderbrief` is a deploy mirror of this directory. Auth: SSH key `~/.ssh/id_ed25519_jarvisgalliers` via the `github-jg` Host alias (see decision #89). To push an update from a clone:
